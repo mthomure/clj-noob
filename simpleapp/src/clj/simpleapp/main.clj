@@ -5,16 +5,14 @@
             [compojure.core :as comp :refer (defroutes GET)]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [taoensso.timbre :refer [info warn]]
             [clojure.pprint :refer [pprint]]
-            [hiccup.core :as hiccup]
-            ))
+            [hiccup.core :as hiccup]))
 
 (defn landing-page [req]
   (hiccup/html
    [:h1 "simpleapp landing page"]
-   [:script {:src "main.js"}] ; Include our cljs target
-   ))
+   ;; Include our cljs target
+   [:script {:src "main.js"}]))
 
 (defroutes http-routes
   (GET "/" req landing-page)
@@ -23,7 +21,9 @@
 
 ;;;; Routing handlers
 
-(defn wrap-logging [handler]
+(defn wrap-logging
+  "write http requests to stdout"
+  [handler]
   (fn [req]
     (println "WRAP-LOGGING:")
     (pprint req)
@@ -42,8 +42,7 @@
     ;; start http server
     (httpd/start! (app socket) port)
     ;; start event handler
-    (router/start! event/handler socket)
-    ))
+    (router/start! event/handler socket)))
 
 (defn stop! []
   (httpd/stop!)

@@ -11,7 +11,7 @@
 (defn start! [app & [port]]
   (stop!)
   (info "Starting http-kit...")
-  (let [port (or port 0)  ;; 0 => auto
+  (let [port (or port 0)  ;; auto-select port
         stop-fn (http-kit/run-server app {:port port :join? false})
         port (:local-port (meta stop-fn))
         stop-fn (fn [] (stop-fn :timeout 100))]

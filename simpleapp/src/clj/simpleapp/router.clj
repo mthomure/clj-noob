@@ -1,9 +1,7 @@
 (ns simpleapp.router
   (:require [compojure.core :refer (routes GET POST)]
             [taoensso.sente :as sente]
-            [taoensso.sente.server-adapters.http-kit :refer [http-kit-adapter]]
-            [taoensso.timbre :refer [info]]
-            [clojure.pprint :refer [pprint]]))
+            [taoensso.sente.server-adapters.http-kit :refer [http-kit-adapter]]))
 
 ;; singleton sente socket. avoid using this directly. instead use (socket).
 (def SOCKET (sente/make-channel-socket! http-kit-adapter))
@@ -15,14 +13,9 @@
   [app  ;; compojure application to wrap
    comms-path  ;; url path for router, such as "/chsk"
    socket]
-  (let [{:keys [ajax-post-fn ajax-get-or-ws-handshake-fn]} socket
-        f (fn [req]
-            (println "ROUTER:")
-            (pprint req)
-            (ajax-get-or-ws-handshake-fn req))]
+  (let [{:keys [ajax-post-fn ajax-get-or-ws-handshake-fn]} socket]
     (routes
-     ;; (GET comms-path req ajax-get-or-ws-handshake-fn)
-     (GET comms-path req f)
+     (GET comms-path req ajax-get-or-ws-handshake-fn)
      (POST comms-path req ajax-post-fn)
      app)))
 
